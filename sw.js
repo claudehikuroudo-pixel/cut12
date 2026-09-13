@@ -1,5 +1,9 @@
 // オフラインでも開けるようにする。本体(index.html)はネット優先＝更新がすぐ届く。
-const CACHE = "cut12-v1";
+const CACHE = "cut12-v2";
+// 顔検出の部品（CDN・約17MB）は初回に1度だけ取り、別の箱に長く持つ
+const RT = "cut12-rt-v1";
+// 手書き風の文字（Google Fonts）も同じ箱に入れる＝2回目からはオフラインでも白丸の数字が手書き風になる
+const RT_HOSTS = ["cdn.jsdelivr.net", "storage.googleapis.com", "fonts.googleapis.com", "fonts.gstatic.com"];
 const SHELL = ["./", "./index.html", "./manifest.json", "./icon-180.png", "./icon-192.png", "./icon-512.png"];
 
 self.addEventListener("install", e => {
@@ -9,14 +13,26 @@ self.addEventListener("install", e => {
 self.addEventListener("activate", e => {
   e.waitUntil(
     caches.keys()
-      .then(ks => Promise.all(ks.filter(k => k !== CACHE).map(k => caches.delete(k))))
+      .then(ks => Promise.all(ks.filter(k => k !== CACHE && k !== RT).map(k => caches.delete(k))))
       .then(() => self.clients.claim())
   );
 });
 
 self.addEventListener("fetch", e => {
   const req = e.request;
-  if (req.method !== "GET" || new URL(req.url).origin !== location.origin) return;
+  if (req.method !== "GET") return;
+  const url = new URL(req.url);
+  if (RT_HOSTS.includes(url.hostname)) {
+    e.respondWith(caches.open(RT).then(async c => {
+      const hit = await c.match(req);
+      if (hit) return hit;
+      const res = await fetch(req);
+      if (res.ok || res.type === "opaque") c.put(req, res.clone());
+      return res;
+    }));
+    return;
+  }
+  if (url.origin !== location.origin) return;
   if (req.mode === "navigate") {
     e.respondWith(
       fetch(req)
