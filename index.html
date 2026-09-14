@@ -113,7 +113,60 @@
   .item .d{color:var(--muted);font-size:12px;margin-left:8px}
   .item .p{flex:none;color:var(--faint);font-size:12px;font-variant-numeric:tabular-nums}
 
+  /* 食事の枠（朝・昼・間食・夜）：予定どおり／写真／飯抜き／その他 */
+  .slot{border:1px solid rgba(255,255,255,.6);border-radius:16px;background:rgba(255,255,255,.34);padding:10px 12px;margin-top:8px}
+  .slot.on{border-color:#fff;background:rgba(255,255,255,.8)}
+  .slot.skip .slot-b{color:var(--warn);font-weight:600}
+  .slot-h{display:flex;align-items:baseline;gap:8px;font-size:14px}
+  .slot-h b{flex:none;font-weight:600}
+  .slot-b{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .slot-b .d{color:var(--muted);font-size:12px;margin-left:6px}
+  .slot-h .p{flex:none;color:var(--muted);font-size:12px;font-variant-numeric:tabular-nums}
+  .chips{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+  .chips button{border:1px solid var(--edge);background:rgba(255,255,255,.5);border-radius:99px;padding:6px 11px;
+                font-size:12px;color:var(--ink);cursor:pointer;font-family:inherit;line-height:1.3}
+  .chips button.on{background:var(--avg);border-color:var(--avg);color:#fff}
+  .slot .chips{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px}
+  .slot .chips button{padding:6px 2px;white-space:nowrap}
+  /* minmax(0,1fr)：入力欄の既定の幅で列が押し広げられ、画面が横に550pxまで広がったため（2026-09-14実測） */
+  .fd{max-width:480px;width:100%;margin:10px auto 0;display:grid;grid-template-columns:minmax(0,1fr);gap:12px}
+  .fd h3{font-size:13px;font-weight:600;margin:0;color:var(--muted)}
+  .fd .field{display:flex;gap:8px;align-items:center}
+  .fd input[type=text],.fd input[type=number],.fd input[type=password]{flex:1;min-width:0;height:42px;padding:0 12px;font-size:16px;font-family:inherit;
+        border:1px solid var(--edge);border-radius:12px;background:rgba(255,255,255,.7);color:var(--ink)}
+  .fd input.num-in{flex:0 0 84px;width:84px}
+  .fd .line{display:flex;justify-content:space-between;gap:8px;font-size:13px;padding:4px 0;border-bottom:1px dashed rgba(58,46,110,.18)}
+  .fd .line span:last-child{flex:none;font-variant-numeric:tabular-nums;color:var(--muted)}
+  .fd .x{border:0;background:none;color:var(--warn);font-size:13px;cursor:pointer;font-family:inherit;padding:0 0 0 8px}
+  .fd .shot{display:flex;gap:12px;align-items:flex-start}
+  .fd .shot img{width:88px;height:88px;object-fit:cover;border-radius:12px;flex:none}
+  .fd .msg{font-size:13px;margin:0;white-space:pre-line}
+  .fd .msg.warn{color:var(--warn)}
   .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+  /* 今日の追い込み：本気の見出し＋食べすぎ分の筋トレ換算 */
+  .hardh{display:flex;align-items:center;gap:10px}
+  .hardh h2{font-size:21px;font-weight:800;letter-spacing:.02em}
+  .tag{font-size:10px;font-weight:700;letter-spacing:.22em;color:#fff;background:linear-gradient(90deg,#FF7A2A,#FF3B1A);border-radius:99px;padding:3px 9px}
+  .burn{margin-top:12px;padding:12px 14px;border-radius:16px;background:#1E1B30;color:#fff}
+  .burn .h{font-size:13px;opacity:.8}
+  .burn .h b{font-size:18px;color:#FF9B5A;opacity:1;margin:0 2px}
+  .burn .reps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-top:8px;text-align:center}
+  .burn .reps div{background:rgba(255,255,255,.08);border-radius:12px;padding:8px 2px}
+  .burn .reps b{display:block;font-size:24px;font-weight:800;line-height:1.1;font-variant-numeric:tabular-nums}
+  .burn .reps span{font-size:11px;opacity:.75}
+  .burn .ft{font-size:11px;opacity:.65;margin-top:8px}
+  .burn .ft b{color:#FF9B5A}
+  .burn .sub{font-size:11px;opacity:.7;margin-top:10px;letter-spacing:.04em}
+  .burn .cardio{margin-top:6px;background:rgba(255,255,255,.08);border-radius:12px;padding:8px 12px;font-size:13px}
+  .burn .cardio b{font-size:24px;font-weight:800;margin-right:2px;font-variant-numeric:tabular-nums}
+  .burn .cardio span{font-size:11px;opacity:.7;margin-left:4px}
+  .burn.ok{background:rgba(29,122,95,.12);color:var(--ink)}
+  .burn.ok .h{opacity:1}
+  .burn.ok .h b{color:var(--ok)}
+  .burn.setup{background:rgba(255,255,255,.5);color:var(--ink)}
+  #bdPal{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
+  #bdPal button{border-radius:14px;padding:8px 4px;white-space:normal}
+  #bdPal small{font-size:10px;opacity:.8}
   .tile{border:1px solid rgba(255,255,255,.6);border-radius:16px;background:rgba(255,255,255,.34);
         padding:10px 4px 14px;font-size:14px;color:var(--muted);cursor:pointer;font-family:inherit}
   .tile::before{content:"";display:block;height:16px;font-size:13px;line-height:16px;color:var(--avg);font-weight:700}
@@ -255,10 +308,13 @@
   <section class="glass panel">
     <div class="row"><h2>今日の食事</h2><span class="sm num" id="macro"></span></div>
     <div id="meals"></div>
+    <input type="file" id="foodFile" accept="image/*" hidden>
+    <p class="xs" style="margin:8px 0 0">📷 は写真からAIが大体のカロリーを出します（1枚 約2〜3円・通信が必要）。出た数字はその場で直せます。</p>
   </section>
 
   <section class="glass panel">
-    <h2>今日の実行</h2>
+    <div class="hardh"><span class="tag">TRAINING</span><h2>今日の追い込み</h2></div>
+    <div id="burn"></div>
     <div class="grid3" id="tasks"></div>
     <p class="xs" id="liftLine" style="margin:8px 0 0"></p>
   </section>
@@ -271,6 +327,8 @@
     <button id="export">データを書き出す</button>
     <button id="import">読み込む</button>
     <button id="config">開始日と目標を変える</button>
+    <button id="aiConfig">写真カロリーの設定</button>
+    <button id="bodyConfig">からだの設定</button>
     <input type="file" id="file" accept="application/json,.json" hidden>
   </div>
   <p class="xs" style="margin:0">
@@ -308,6 +366,98 @@
   <div class="edbtns" style="justify-content:center">
     <button class="ghost" id="vwShare">保存・共有</button>
     <button class="ghost" id="vwDel">この写真を消す</button>
+  </div>
+</div>
+
+<!-- 食事：写真の推定・いつもの・手入力 -->
+<div class="modal" id="food" hidden>
+  <div class="mhead">
+    <button class="ghost" id="fdClose">閉じる</button>
+    <span class="sm" id="fdTitle"></span>
+    <span style="width:52px"></span>
+  </div>
+  <div class="fd">
+    <div id="fdCur"></div>
+    <div class="glass panel" id="fdAi" hidden>
+      <div class="shot"><img id="fdImg" alt="食事の写真">
+        <div style="flex:1;min-width:0"><p class="msg" id="fdMsg"></p><div id="fdRes"></div></div></div>
+      <div id="fdEdit" hidden>
+        <div class="chips" id="fdMul">
+          <button data-mul="0.5">半分</button><button data-mul="0.8">少なめ</button>
+          <button data-mul="1" class="on">そのまま</button><button data-mul="1.2">多め</button><button data-mul="1.5">大盛り</button>
+        </div>
+        <div class="field" style="margin-top:10px">
+          <input type="text" id="fdName" placeholder="料理名">
+        </div>
+        <div class="field" style="margin-top:8px">
+          <input type="number" id="fdKcal" inputmode="numeric" class="num-in" placeholder="kcal"><span class="sm">kcal</span>
+          <input type="number" id="fdP" inputmode="decimal" class="num-in" placeholder="P"><span class="sm">g（タンパク質）</span>
+        </div>
+        <div class="field" style="margin-top:8px">
+          <input type="text" id="fdMemo" placeholder="メモ（例：大盛り・半分残した）">
+          <button class="ghost" id="fdRetry">推定し直す</button>
+        </div>
+        <button class="closeday" id="fdSave" style="margin-top:12px">この内容で記録する</button>
+      </div>
+    </div>
+    <div id="fdRecentBox"><h3>いつもの（タップで記録）</h3><div class="chips" id="fdRecent"></div></div>
+    <div>
+      <h3>手で入れる</h3>
+      <div class="field" style="margin-top:6px"><input type="text" id="mnName" placeholder="料理名（なくてもOK）"></div>
+      <div class="field" style="margin-top:8px">
+        <input type="number" id="mnKcal" inputmode="numeric" class="num-in" placeholder="kcal"><span class="sm">kcal</span>
+        <input type="number" id="mnP" inputmode="decimal" class="num-in" placeholder="P"><span class="sm">g</span>
+      </div>
+      <button class="ghost" id="mnSave" style="margin-top:8px">記録する</button>
+    </div>
+  </div>
+</div>
+
+<!-- からだの設定（消費カロリー） -->
+<div class="modal" id="body" hidden>
+  <div class="mhead">
+    <button class="ghost" id="bdClose">閉じる</button>
+    <span class="sm">からだの設定</span>
+    <span style="width:52px"></span>
+  </div>
+  <div class="fd">
+    <p class="sm" style="margin:0">身長・年齢・性別・ふだんの動き方から、1日の消費カロリーと「今日食べていい目安」を出します。体重は記録（7日平均）を使います。</p>
+    <div class="field"><input type="number" id="bdH" inputmode="decimal" class="num-in" placeholder="身長"><span class="sm">cm</span>
+      <input type="number" id="bdAge" inputmode="numeric" class="num-in" placeholder="年齢"><span class="sm">歳</span></div>
+    <div class="chips" id="bdSex"><button data-sex="m">男性</button><button data-sex="f">女性</button></div>
+    <div><h3>ふだんの動き方（身体活動レベル）</h3>
+      <div class="chips" id="bdPal" style="margin-top:6px">
+        <button data-pal="1.5">低い 1.50<br><small>座っている時間が長い</small></button>
+        <button data-pal="1.75">ふつう 1.75<br><small>座り仕事＋移動や家事</small></button>
+        <button data-pal="2">高い 2.00<br><small>立ち仕事・運動習慣あり</small></button>
+      </div></div>
+    <div class="glass panel" id="bdOut"></div>
+    <button class="closeday" id="bdSave">保存</button>
+    <p class="xs" style="margin:0">計算：基礎代謝＝国立健康・栄養研究所の式、活動レベル＝日本人の食事摂取基準（2020年版）、脂肪1kg＝7,000kcal（厚労省 身体活動・運動ガイド2023）。どれも推定なので、2週間の体重の動きで見直してください。</p>
+  </div>
+</div>
+
+<!-- 写真カロリーの設定（APIキー） -->
+<div class="modal" id="aiset" hidden>
+  <div class="mhead">
+    <button class="ghost" id="asClose">閉じる</button>
+    <span class="sm">写真カロリーの設定</span>
+    <span style="width:52px"></span>
+  </div>
+  <div class="fd">
+    <p class="sm" style="margin:0">
+      写真からカロリーを出すのに、Anthropic社のAI「Claude」（Claude Opus 5）を使います。Claude Console（platform.claude.com → Settings → API keys）で作ったAPIキーを貼り付けてください。料金はClaudeの月額プランとは別で、使った分だけかかります。
+    </p>
+    <p class="xs" style="margin:0">
+      キーはこのiPhoneの中だけに保存します（「データを書き出す」のファイルにも入りません）。送るのは食事の写真とメモだけで、体重などの記録は送りません。
+    </p>
+    <div class="field"><input type="password" id="asKey" placeholder="sk-ant-…" autocomplete="off" autocapitalize="off" spellcheck="false"></div>
+    <div class="edbtns" style="margin:0">
+      <button class="primary" id="asSave">保存</button>
+      <button class="ghost" id="asDel">キーを消す</button>
+    </div>
+    <p class="msg" id="asMsg"></p>
+    <p class="xs" id="asUse" style="margin:0"></p>
   </div>
 </div>
 
@@ -440,17 +590,26 @@ function render(){
   renderPhotos();
 
   // 食事
-  const meals=d.meals||[];
-  const P=MEALS.filter(m=>meals.includes(m.id)).reduce((a,m)=>a+m.p,0);
-  const K=MEALS.filter(m=>meals.includes(m.id)).reduce((a,m)=>a+m.kcal,0);
-  $("macro").textContent="タンパク質 "+P+" / 120g・"+K+" kcal";
-  $("macro").style.color=P>=120?"var(--avg)":"var(--muted)";
+  const sum=daySum(d), en=energy(), goalK=en?en.target:PLAN_K;
+  $("macro").textContent=`${sum.k.toLocaleString()} / ${goalK.toLocaleString()}kcal・P${Math.round(sum.p)} / 120g`;
+  renderBurn(d);
+  $("macro").style.color=sum.p>=120?"var(--avg)":"var(--muted)";
   $("meals").innerHTML=MEALS.map(m=>{
-    const on=meals.includes(m.id);
-    return `<button class="item${on?" on":""}" data-meal="${m.id}">
-      <span class="box">${on?"✓":""}</span>
-      <span style="flex:1;min-width:0">${m.label}<span class="d">${m.detail}</span></span>
-      <span class="p">P${m.p}</span></button>`;
+    const s=slotOf(d,m.id), v=slotSum(m.id,s);
+    let body, cls="";
+    if(!s) body=`<span class="d" style="margin:0">予定：${m.detail}</span>`;
+    else if(s.plan){ body=`予定どおり<span class="d">${m.detail}</span>`; cls=" on"; }
+    else if(s.skip){ body="抜き"; cls=" on skip"; }
+    else { body=esc(s.items.map(x=>x.n).join("・")); cls=" on"; }
+    const right=!s?"":s.skip?"0kcal":`${v.k.toLocaleString()}kcal・P${Math.round(v.p)}`;
+    return `<div class="slot${cls}">
+      <div class="slot-h"><b>${m.label}</b><span class="slot-b">${body}</span><span class="p">${right}</span></div>
+      <div class="chips">
+        <button data-plan="${m.id}"${s&&s.plan?' class="on"':""}>予定どおり</button>
+        <button data-shot="${m.id}">📷 写真</button>
+        <button data-skip="${m.id}"${s&&s.skip?' class="on"':""}>飯抜き</button>
+        <button data-more="${m.id}">その他</button>
+      </div></div>`;
   }).join("");
 
   // 実行
@@ -474,10 +633,10 @@ let calSel=null;
 function dayText(i){
   const di=diff(S.start,today), k=add(S.start,i), x=S.days[k], head=`${md(k)}（${i+1}日目）`;
   if(i>di) return head+"　まだ先の日です。";
-  const meals=x&&x.meals?x.meals.length:0;
+  const meals=x?MEALS.filter(m=>slotOf(x,m.id)).length:0;
   if(!lvOf(x)&&!meals) return head+"　記録なし。";
   return head+"　"+(x.w!=null?x.w.toFixed(1)+"kg":"体重なし")+"・"+
-    TASKS.map(t=>SHORT[t.id]+(x[t.id]?"✓":"—")).join("・")+"・食事"+meals+"/4";
+    TASKS.map(t=>SHORT[t.id]+(x[t.id]?"✓":"—")).join("・")+"・食事"+meals+"/4"+(meals?`（${daySum(x).k.toLocaleString()}kcal）`:"");
 }
 function renderCal(di){
   const done=Math.min(di+1,TOTAL);
@@ -509,13 +668,16 @@ const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",
 function liftWeek(di){ const ws=Math.floor(di/7)*7; let n=0; for(let i=ws;i<=di;i++){const x=S.days[add(S.start,i)]; if(x&&x.lift)n++} return n; }
 function openReceipt(){
   today=key();
-  const {rows,di}=series(), d=day(), cur=rows[di], meals=d.meals||[];
+  const {rows,di}=series(), d=day(), cur=rows[di];
   const now=new Date(), hm=String(now.getHours()).padStart(2,"0")+":"+String(now.getMinutes()).padStart(2,"0");
   const L=(a,b,c)=>`<div class="r-l${c?" "+c:""}"><span>${a}</span><span>${b}</span></div>`, HR='<div class="r-hr"></div>';
-  let P=0,K=0;
+  const {k:K,p:P0}=daySum(d), P=Math.round(P0);
   const ml=MEALS.map(m=>{
-    const on=meals.includes(m.id); if(on){P+=m.p;K+=m.kcal}
-    return on?L(esc(m.label+" "+m.detail),"P"+m.p+"　"+m.kcal):L(m.label+" （なし）","―","r-mute");
+    const s=slotOf(d,m.id), v=slotSum(m.id,s);
+    if(!s) return L(m.label+" （未記録）","―","r-mute");
+    if(s.skip) return L(m.label+" （抜き）","0");
+    if(s.plan) return L(esc(m.label+" "+m.detail),"P"+m.p+"　"+m.kcal);
+    return s.items.map((x,i)=>L(esc((i?"　":m.label+" ")+x.n),"P"+Math.round(x.p)+"　"+x.kcal)).join("");
   }).join("");
   const tk=TASKS.map(t=>L(t.label+(t.id==="lift"?`（今週${liftWeek(di)}/2）`:""),d[t.id]?"済":"未",d[t.id]?"":"r-mute")).join("");
   let wv=L("今朝の体重",d.w!=null?d.w.toFixed(1)+"kg":"未記録",d.w!=null?"":"r-mute");
@@ -531,6 +693,12 @@ function openReceipt(){
        <div class="r-mute">${today.replace(/-/g,"/")}(${"日月火水木金土"[now.getDay()]}) ${hm}　No.${String(di+1).padStart(3,"0")}/${TOTAL}</div></div>`+
     HR+ml+HR+
     L("タンパク質 計",`${P} / 120g`)+L("摂取 計",K.toLocaleString()+"kcal","r-big")+
+    (()=>{ const e=energy(); if(!e) return ""; const o=K-e.target;
+      if(o<=0) return L("今日の目安",e.target.toLocaleString()+"kcal")+L("残り",(-o).toLocaleString()+"kcal");
+      const p=burnPlan(o,e.w);
+      return L("今日の目安",e.target.toLocaleString()+"kcal")+L("食べすぎ",`+${o.toLocaleString()}kcal`,"r-big")+
+        L("　追い込み",p.reps.map(r=>r.n+r.c).join("・"))+(p.min?L("　＋"+CARDIO.n,p.min+"分"):"")+
+        (p.left?L("　明日へ持ち越し",p.left.toLocaleString()+"kcal"):""); })()+
     HR+tk+HR+wv+
     `<div class="r-c r-big" style="margin-top:4px">＊＊ ${verdict} ＊＊</div>`+
     HR+L("今日のマス",`${lvOf(d)} / 4`)+
@@ -540,6 +708,260 @@ function openReceipt(){
   openModal("receipt");
 }
 $("closeDay").addEventListener("click",openReceipt);
+
+/* ===== 食事：枠ごとに「予定どおり／写真（AI推定）／いつもの・手入力（複数可）／飯抜き」 =====
+   保存の形：d.meals＝予定どおりの枠id（旧版と同じ）／d.food[id]＝{skip:true} か {items:[{n,kcal,p,src}]} */
+const PLAN_K=MEALS.reduce((a,m)=>a+m.kcal,0);
+function slotOf(d,id){
+  if(d.food&&d.food[id]) return d.food[id];
+  return (d.meals||[]).includes(id)?{plan:true}:null;
+}
+function slotSum(id,s){
+  if(!s||s.skip) return {k:0,p:0};
+  if(s.plan){ const m=MEALS.find(x=>x.id===id); return {k:m.kcal,p:m.p}; }
+  return s.items.reduce((a,x)=>({k:a.k+x.kcal,p:a.p+x.p}),{k:0,p:0});
+}
+function daySum(d){ return MEALS.reduce((a,m)=>{ const v=slotSum(m.id,slotOf(d,m.id)); return {k:a.k+v.k,p:a.p+v.p}; },{k:0,p:0}); }
+function setSlot(id,s){
+  const d=day(), meals=(d.meals||[]).filter(x=>x!==id), food=Object.assign({},d.food);
+  delete food[id];
+  if(s&&s.plan) meals.push(id); else if(s) food[id]=s;
+  patch({meals,food});
+}
+function addItem(id,it){
+  const s=slotOf(day(),id), items=s&&s.items?s.items.slice():[];
+  items.push(it); setSlot(id,{items});
+  // 「いつもの」に覚える（名前が同じなら新しい方で上書き・12件まで）
+  S.recent=[{n:it.n,kcal:it.kcal,p:it.p}].concat((S.recent||[]).filter(r=>r.n!==it.n)).slice(0,12); save();
+}
+
+/* ===== 消費カロリーと「食べすぎ分の筋トレ換算」 =====
+   基礎代謝＝国立健康・栄養研究所の式（Ganpule 2007／日本人の食事摂取基準2020 報告書に掲載）
+   1日の消費＝基礎代謝×身体活動レベル（1.50/1.75/2.00＝同基準 30〜64歳）
+   1日に減らす量＝(開始体重−目標)×7,000kcal÷84日（脂肪1kg＝7,000kcal：厚労省 身体活動・運動ガイド2023）
+   運動の消費＝メッツ×体重×時間（医薬基盤・健康・栄養研究所 メッツ表 成人版の式）
+   メッツ＝腕立て伏せ・腹筋 8.0（健康体操・きつい労力 02020）／スクワット 5.0（レジスタンス：スクワット 02052・表中でも推定値）
+   1回の秒数は公的な資料が無いので仮置き（腕立て・腹筋2秒、スクワット3秒）＝画面にも「目安」と出す */
+const FAT_KCAL=7000;
+// 30分で終わる分散メニュー：①筋トレ（上限＝3セットで現実的な回数・約10分）②残りを有酸素（上限20分）
+// 有酸素のメッツ＝その場ジョギング 8.0（12025）／縄跳び・ゆっくり 8.8（15552）（改訂版メッツ表 2012）
+const REPS=[{n:"腕立て",mets:8,sec:2,max:30},{n:"腹筋",mets:8,sec:2,max:45},{n:"スクワット",mets:5,sec:3,max:60}];
+const CARDIO={n:"その場ジョギング",mets:8,alt:"縄跳び",altMets:8.8,maxMin:20}, BLOCK_MIN=10;
+function curW(){ const a=avgOn(today), x=S.days[today]; return a!=null?a:(x&&x.w!=null?x.w:lastW()); }
+function energy(){
+  const b=S.body; if(!b||!b.h||!b.age||!b.sex||!b.pal) return null;
+  const w=curW();
+  const bmr=(0.0481*w+0.0234*b.h-0.0138*b.age-(b.sex==="f"?0.9708:0.4235))*1000/4.186;
+  const tdee=bmr*b.pal, cut=Math.max(0,(S.startW-S.goalW)*FAT_KCAL/TOTAL);
+  return {w,bmr:Math.round(bmr),tdee:Math.round(tdee),cut:Math.round(cut),target:Math.round(tdee-cut)};
+}
+// 食べすぎ分(kcal)を「筋トレ＋有酸素」に分けて30分以内に収める。収まらない分は left に残して正直に出す
+function burnPlan(kcal,w){
+  const kOf=(r,c)=>r.mets*w*r.sec*c/3600;
+  const full=REPS.reduce((a,r)=>a+kOf(r,r.max),0);
+  const f=Math.min(1,kcal/full);
+  const reps=REPS.map(r=>({n:r.n,c:Math.max(5,Math.ceil(r.max*f/5)*5)}));
+  const sk=REPS.reduce((a,r,i)=>a+kOf(r,reps[i].c),0);
+  const perMin=CARDIO.mets*w/60, rest=Math.max(0,kcal-sk);
+  const min=Math.min(CARDIO.maxMin,Math.ceil(rest/perMin));
+  const altMin=min?Math.ceil(Math.min(rest,CARDIO.maxMin*perMin)/(CARDIO.altMets*w/60)):0;
+  const done=Math.round(sk+min*perMin);
+  return {reps,min,altMin,total:Math.round(BLOCK_MIN*f)+min,done,left:Math.max(0,Math.round(kcal-done))};
+}
+function renderBurn(d){
+  const e=energy(), el=$("burn");
+  if(!e){ el.innerHTML=`<div class="burn setup"><div class="h">身長・年齢を入れると、食べすぎた分を「腕立て◯回」で出します。</div>
+      <button class="ghost" data-open-body style="margin-top:8px">からだの設定</button></div>`; return; }
+  const k=daySum(d).k, over=k-e.target;
+  if(over<=0){ el.innerHTML=`<div class="burn ok"><div class="h">今日の目安 ${e.target.toLocaleString()}kcal まで、あと<b>${(-over).toLocaleString()}</b>kcal</div></div>`; return; }
+  const p=burnPlan(over,e.w);
+  el.innerHTML=`<div class="burn"><div class="h">食べすぎ <b>+${over.toLocaleString()}</b>kcal　→ ${p.left?"30分メニュー":`約${Math.max(p.total,1)}分で帳消し`}</div>
+    <div class="sub">① 筋トレ（3セットに分けて）</div>
+    <div class="reps">${p.reps.map(r=>`<div><b>${r.c}</b><span>${r.n} 回</span></div>`).join("")}</div>
+    ${p.min?`<div class="sub">② 有酸素</div><div class="cardio"><b>${p.min}</b>分 ${CARDIO.n}<span>（${CARDIO.alt}なら ${p.altMin}分）</span></div>`:""}
+    <div class="ft">${p.left?`30分で消せるのは約${p.done.toLocaleString()}kcal。残り <b>${p.left.toLocaleString()}kcal</b> は明日の食事で調整を。`:`約${p.done.toLocaleString()}kcal分。`}
+    今日の目安 ${e.target.toLocaleString()}kcal／メッツ表の値と1回2〜3秒で計算した目安</div></div>`;
+}
+document.addEventListener("click",e=>{ if(e.target.closest("[data-open-body]")) bdOpen(); });
+
+// からだの設定
+let BD={};
+function bdOpen(){
+  const b=S.body||{}; BD={h:b.h||"",age:b.age||"",sex:b.sex||"",pal:b.pal||1.75};
+  $("bdH").value=BD.h; $("bdAge").value=BD.age; bdSync(); openModal("body");
+}
+function bdSync(){
+  [...$("bdSex").children].forEach(x=>x.classList.toggle("on",x.dataset.sex===BD.sex));
+  [...$("bdPal").children].forEach(x=>x.classList.toggle("on",+x.dataset.pal===+BD.pal));
+  const keep=S.body; S.body={h:+BD.h,age:+BD.age,sex:BD.sex,pal:+BD.pal}; const e=energy(); S.body=keep;
+  $("bdOut").innerHTML=e?`<div class="line"><span>体重（7日平均・なければ最新）</span><span>${e.w.toFixed(1)}kg</span></div>
+    <div class="line"><span>基礎代謝</span><span>${e.bmr.toLocaleString()}kcal</span></div>
+    <div class="line"><span>1日の消費</span><span>${e.tdee.toLocaleString()}kcal</span></div>
+    <div class="line"><span>減らす量（${S.startW}→${S.goalW}kg を${TOTAL}日で）</span><span>−${e.cut.toLocaleString()}kcal</span></div>
+    <div class="line" style="font-weight:600"><span>今日食べていい目安</span><span style="color:var(--ink)">${e.target.toLocaleString()}kcal</span></div>`
+    :`<p class="sm" style="margin:0">身長・年齢・性別を入れると計算します。</p>`;
+}
+["bdH","bdAge"].forEach(id=>$(id).addEventListener("input",()=>{ BD.h=$("bdH").value; BD.age=$("bdAge").value; bdSync(); }));
+$("bdSex").addEventListener("click",e=>{ const b=e.target.closest("[data-sex]"); if(b){ BD.sex=b.dataset.sex; bdSync(); } });
+$("bdPal").addEventListener("click",e=>{ const b=e.target.closest("[data-pal]"); if(b){ BD.pal=+b.dataset.pal; bdSync(); } });
+$("bdSave").addEventListener("click",()=>{
+  const h=+BD.h, a=+BD.age;
+  if(!(h>=120&&h<=220)||!(a>=15&&a<=100)||!BD.sex){ alert("身長（cm）・年齢・性別を入れてください。"); return; }
+  S.body={h,age:a,sex:BD.sex,pal:+BD.pal}; save(); render(); closeModal("body");
+});
+$("bdClose").addEventListener("click",()=>closeModal("body"));
+$("bodyConfig").addEventListener("click",bdOpen);
+
+const FD={slot:null,img:null,res:null,mul:1,busy:false};
+const slotLabel=id=>MEALS.find(m=>m.id===id).label;
+function foodOpen(id){
+  FD.slot=id; $("fdTitle").textContent=slotLabel(id)+"の食事"; $("fdAi").hidden=true;
+  ["mnName","mnKcal","mnP"].forEach(x=>$(x).value="");
+  foodRender(); openModal("food");
+}
+function foodRender(){
+  const s=slotOf(day(),FD.slot);
+  $("fdCur").innerHTML=s&&s.items?`<h3>記録済み</h3>`+s.items.map((x,i)=>
+    `<div class="line"><span>${esc(x.n)}</span><span>${x.kcal}kcal・P${Math.round(x.p)}<button class="x" data-del="${i}">消す</button></span></div>`).join("")
+    : s&&s.skip?`<p class="sm" style="margin:0;color:var(--warn)">この食事は「抜き」で記録されています。下で記録すると置き換わります。</p>`
+    : s&&s.plan?`<p class="sm" style="margin:0">「予定どおり」で記録されています。下で記録すると置き換わります。</p>`:"";
+  const rc=S.recent||[];
+  $("fdRecentBox").hidden=!rc.length;
+  $("fdRecent").innerHTML=rc.map((r,i)=>`<button data-rc="${i}">${esc(r.n)} ${r.kcal}</button>`).join("");
+}
+$("fdClose").addEventListener("click",()=>{ FD.res=null; closeModal("food"); });
+$("fdCur").addEventListener("click",e=>{
+  const b=e.target.closest("[data-del]"); if(!b) return;
+  const s=slotOf(day(),FD.slot), items=s.items.filter((_,i)=>i!==+b.dataset.del);
+  setSlot(FD.slot,items.length?{items}:null); foodRender();
+});
+$("fdRecent").addEventListener("click",e=>{
+  const b=e.target.closest("[data-rc]"); if(!b) return;
+  const r=S.recent[+b.dataset.rc]; addItem(FD.slot,{n:r.n,kcal:r.kcal,p:r.p,src:"recent"}); closeModal("food");
+});
+$("mnSave").addEventListener("click",()=>{
+  const k=parseInt($("mnKcal").value,10), p=parseFloat($("mnP").value)||0;
+  if(!(k>=0&&k<5000)){ alert("kcalを数字で入れてください。"); return; }
+  addItem(FD.slot,{n:$("mnName").value.trim()||"手入力",kcal:k,p:+p.toFixed(1),src:"manual"}); closeModal("food");
+});
+
+// 写真 → Claude で大体のカロリー（キーはこの端末の localStorage だけ。書き出しJSONには入れない）
+const AKEY="cut12:ak", AUSE="cut12:aiuse";
+const SDK_URL="https://cdn.jsdelivr.net/npm/@anthropic-ai/sdk@0.125.0/+esm";
+let sdkP=null;
+const loadSDK=()=>sdkP||(sdkP=import(SDK_URL).then(m=>m.default).catch(e=>{sdkP=null;throw e}));
+const getKey=()=>{ try{ return localStorage.getItem(AKEY)||""; }catch(e){ return ""; } };
+const FOOD_SYS="あなたは食事の写真から、エネルギー(kcal)とたんぱく質(g)を概算する栄養計算の担当です。"+
+  "写っている料理・飲み物を1品ずつ items に分け、日本の一般的な1人前を基準に、器の大きさ・盛り具合・食べ残しなど写真から分かる量で調整してください。"+
+  "メモがあれば量の手がかりとして優先してください。見えない調味料や油は一般的な量を含めます。"+
+  "title は記録に使う短い料理名（例：鶏の唐揚げ定食）。note は量の見積もりで迷った点を40字以内で（なければ空文字）。"+
+  "食べ物が写っていない写真なら items を空にし、note にその旨を書いてください。";
+const FOOD_SCHEMA={type:"object",additionalProperties:false,required:["title","items","confidence","note"],properties:{
+  title:{type:"string"},
+  items:{type:"array",items:{type:"object",additionalProperties:false,required:["name","kcal","protein_g"],
+    properties:{name:{type:"string"},kcal:{type:"integer"},protein_g:{type:"number"}}}},
+  confidence:{type:"string",enum:["high","medium","low"]},
+  note:{type:"string"}}};
+// Claude Opus 5 の定価（$5 / $25 per 1M tokens）で1回ぶんの費用を数えて、今月の合計を設定画面に出す
+function trackUse(u){
+  if(!u) return;
+  const m=today.slice(0,7); let o={};
+  try{ o=JSON.parse(localStorage.getItem(AUSE))||{}; }catch(e){}
+  if(o.m!==m) o={m,n:0,usd:0};
+  o.n++; o.usd+=((u.input_tokens||0)+(u.cache_creation_input_tokens||0)*1.25+(u.cache_read_input_tokens||0)*0.1)*5e-6+(u.output_tokens||0)*25e-6;
+  try{ localStorage.setItem(AUSE,JSON.stringify(o)); }catch(e){}
+}
+async function estimateFood(b64,memo){
+  const Anthropic=await loadSDK();
+  const client=new Anthropic({apiKey:getKey(),dangerouslyAllowBrowser:true,maxRetries:1});
+  try{
+    const res=await client.messages.create({
+      model:"claude-opus-5", max_tokens:16000,
+      output_config:{effort:"medium",format:{type:"json_schema",schema:FOOD_SCHEMA}},
+      system:FOOD_SYS,
+      messages:[{role:"user",content:[
+        {type:"image",source:{type:"base64",media_type:"image/jpeg",data:b64}},
+        {type:"text",text:memo?"メモ："+memo:"この食事を見積もってください。"}]}]
+    });
+    trackUse(res.usage);
+    if(res.stop_reason==="refusal") throw new Error("AIがこの写真の推定を断りました。下の「手で入れる」で記録してください。");
+    if(res.stop_reason==="max_tokens") throw new Error("AIの返事が途中で切れました。もう一度試してください。");
+    const t=res.content.find(b=>b.type==="text");
+    if(!t) throw new Error("AIの返事が空でした。もう一度試してください。");
+    return JSON.parse(t.text);
+  }catch(e){ throw new Error(aiErr(e,Anthropic)); }
+}
+function aiErr(e,A){
+  if(e instanceof A.AuthenticationError) return "APIキーが正しくありません。「写真カロリーの設定」で貼り直してください。";
+  if(e instanceof A.PermissionDeniedError) return "このAPIキーでは使えません（権限がありません）。";
+  if(e instanceof A.RateLimitError) return "AIが混み合っています。少し待ってから「推定し直す」を押してください。";
+  if(e instanceof A.APIConnectionError) return "通信できませんでした。電波の良い所で「推定し直す」か、下の「手で入れる」で記録してください。";
+  if(e instanceof A.APIError) return (e.type==="billing_error"?"APIの残高が足りません。コンソールで入金してください。":`AIのエラー（${e.status}）`)+"\n"+e.message;
+  return (e&&e.message)||String(e);
+}
+function fdMsg(t,warn){ $("fdMsg").textContent=t; $("fdMsg").className="msg"+(warn?" warn":""); }
+function fdShowEdit(){
+  const r=FD.res, k=r.items.reduce((a,x)=>a+x.kcal,0), p=r.items.reduce((a,x)=>a+x.protein_g,0);
+  $("fdKcal").value=Math.round(k*FD.mul); $("fdP").value=+(p*FD.mul).toFixed(1);
+  [...$("fdMul").children].forEach(b=>b.classList.toggle("on",+b.dataset.mul===FD.mul));
+}
+async function runEstimate(){
+  if(FD.busy) return;
+  if(!getKey()){ fdMsg("先に「写真カロリーの設定」でAPIキーを入れてください（下の「手で入れる」ならキーなしで記録できます）。",true); return; }
+  FD.busy=true; $("fdRetry").disabled=true; $("fdSave").disabled=true;
+  fdMsg(sdkP?"AIが見積もっています…（数秒〜十数秒）":"AIが見積もっています…（初回は部品の読み込みで少し長くかかります）");
+  try{
+    const r=await estimateFood(FD.img,$("fdMemo").value.trim());
+    FD.res=r; FD.mul=1;
+    if(!r.items.length){ fdMsg("食べ物が見つかりませんでした。"+(r.note?"\n"+r.note:""),true); $("fdRes").innerHTML=""; $("fdEdit").hidden=true; return; }
+    $("fdRes").innerHTML=r.items.map(x=>`<div class="line"><span>${esc(x.name)}</span><span>${x.kcal}kcal・P${Math.round(x.protein_g)}</span></div>`).join("");
+    fdMsg((r.confidence==="low"?"⚠ 自信低め。量を確かめてください。":r.confidence==="medium"?"大体の見積もりです。":"見積もりです。")+(r.note?"\n"+r.note:""),r.confidence==="low");
+    $("fdName").value=r.title; $("fdEdit").hidden=false; fdShowEdit();
+  }catch(e){ fdMsg(e.message,true); $("fdEdit").hidden=!FD.res; }
+  finally{ FD.busy=false; $("fdRetry").disabled=false; $("fdSave").disabled=false; }
+}
+$("foodFile").addEventListener("change",async e=>{
+  const f=e.target.files[0]; e.target.value=""; if(!f||!FD.slot) return;
+  foodOpen(FD.slot); FD.res=null; FD.mul=1;
+  $("fdAi").hidden=false; $("fdEdit").hidden=true; $("fdRes").innerHTML=""; $("fdMemo").value="";
+  fdMsg("写真を読み込んでいます…");
+  try{
+    const c=await toCanvas(f,1024);                 // 長辺1024pxに縮める＝送る量と料金を抑える
+    const url=c.toDataURL("image/jpeg",0.8); c.width=0; c.height=0;
+    FD.img=url.slice(url.indexOf(",")+1); $("fdImg").src=url;
+  }catch(err){ fdMsg((err&&err.message)||"写真を読み込めませんでした",true); return; }
+  runEstimate();
+});
+$("fdRetry").addEventListener("click",runEstimate);
+$("fdMul").addEventListener("click",e=>{ const b=e.target.closest("[data-mul]"); if(!b||!FD.res) return; FD.mul=+b.dataset.mul; fdShowEdit(); });
+$("fdSave").addEventListener("click",()=>{
+  const k=parseInt($("fdKcal").value,10), p=parseFloat($("fdP").value)||0;
+  if(!(k>=0&&k<5000)){ alert("kcalを数字で入れてください。"); return; }
+  addItem(FD.slot,{n:$("fdName").value.trim()||"写真の食事",kcal:k,p:+p.toFixed(1),src:"ai"});
+  FD.res=null; closeModal("food");
+});
+
+// 設定：APIキー
+function asOpen(){
+  const k=getKey(); $("asKey").value=""; $("asKey").placeholder=k?"保存済み（…"+k.slice(-4)+"）":"sk-ant-…";
+  $("asMsg").textContent=""; let o=null; try{ o=JSON.parse(localStorage.getItem(AUSE)); }catch(e){}
+  $("asUse").textContent=o&&o.m===today.slice(0,7)?`今月の推定：${o.n}回・約$${o.usd.toFixed(2)}（Opus 5の定価で計算した目安。正確な請求はコンソールで確認）`:"今月の推定：0回";
+  openModal("aiset");
+}
+$("aiConfig").addEventListener("click",asOpen);
+$("asClose").addEventListener("click",()=>closeModal("aiset"));
+$("asSave").addEventListener("click",()=>{
+  const v=$("asKey").value.trim();
+  if(!/^sk-ant-/.test(v)){ $("asMsg").textContent="キーは sk-ant- で始まる文字列です。コピーし直して貼り付けてください。"; $("asMsg").className="msg warn"; return; }
+  try{ localStorage.setItem(AKEY,v); }catch(e){ $("asMsg").textContent="保存できませんでした："+e.message; $("asMsg").className="msg warn"; return; }
+  $("asKey").value=""; $("asKey").placeholder="保存済み（…"+v.slice(-4)+"）";
+  $("asMsg").textContent="保存しました。食事の 📷 から使えます。"; $("asMsg").className="msg";
+});
+$("asDel").addEventListener("click",()=>{
+  if(!confirm("このiPhoneからAPIキーを消します。")) return;
+  try{ localStorage.removeItem(AKEY); }catch(e){}
+  $("asKey").placeholder="sk-ant-…"; $("asMsg").textContent="消しました。"; $("asMsg").className="msg";
+});
 $("rcClose").addEventListener("click",()=>closeModal("receipt"));
 
 /* ===== 体型写真（IndexedDBに「ぼかし済み」の画像だけを保存） ===== */
@@ -866,9 +1288,12 @@ document.addEventListener("click",e=>{
 
 // 操作
 $("meals").addEventListener("click",e=>{
-  const b=e.target.closest("[data-meal]"); if(!b)return;
-  const id=b.dataset.meal, m=day().meals||[];
-  patch({meals:m.includes(id)?m.filter(x=>x!==id):m.concat(id)});
+  const b=e.target.closest("button"); if(!b) return;
+  const d=day(), k=b.dataset;
+  if(k.plan){ const s=slotOf(d,k.plan); setSlot(k.plan,s&&s.plan?null:{plan:true}); }
+  else if(k.skip){ const s=slotOf(d,k.skip); setSlot(k.skip,s&&s.skip?null:{skip:true}); }
+  else if(k.shot){ FD.slot=k.shot; $("foodFile").click(); }
+  else if(k.more) foodOpen(k.more);
 });
 $("tasks").addEventListener("click",e=>{
   const b=e.target.closest("[data-task]"); if(!b)return;
