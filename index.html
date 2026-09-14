@@ -142,6 +142,11 @@
   .fd .shot img{width:88px;height:88px;object-fit:cover;border-radius:12px;flex:none}
   .fd .msg{font-size:13px;margin:0;white-space:pre-line}
   .fd .msg.warn{color:var(--warn)}
+  .fd .cmprow{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px dashed rgba(58,46,110,.18);font-size:13px}
+  .fd .cmprow .nm{flex:1;min-width:0}
+  .fd .cmprow .nm small{display:block;color:var(--muted);font-size:11px;font-variant-numeric:tabular-nums;white-space:pre-line}
+  .fd .cmprow button{flex:none;padding:6px 12px}
+  .fd .cmprow button.on{background:var(--avg);border-color:var(--avg);color:#fff}
   .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
   /* 今日の追い込み：本気の見出し＋食べすぎ分の筋トレ換算 */
   .hardh{display:flex;align-items:center;gap:10px}
@@ -397,6 +402,8 @@
           <input type="text" id="fdMemo" placeholder="メモ（例：大盛り・半分残した）">
           <button class="ghost" id="fdRetry">推定し直す</button>
         </div>
+        <button class="ghost" id="fdCmpBtn" style="margin-top:8px">3つのAIで比べる（この写真だけ・費用は3回分）</button>
+        <div id="fdCmp"></div>
         <button class="closeday" id="fdSave" style="margin-top:12px">この内容で記録する</button>
       </div>
     </div>
@@ -446,8 +453,16 @@
   </div>
   <div class="fd">
     <p class="sm" style="margin:0">
-      写真からカロリーを出すのに、Anthropic社のAI「Claude」（Claude Opus 5）を使います。Claude Console（platform.claude.com → Settings → API keys）で作ったAPIキーを貼り付けてください。料金はClaudeの月額プランとは別で、使った分だけかかります。
+      写真からカロリーを出すのに、Anthropic社のAI「Claude」を使います。Claude Console（platform.claude.com → Settings → API keys）で作ったAPIキーを貼り付けてください（デテコイで使っているキーと同じものでOK）。料金はClaudeの月額プランとは別で、使った分だけかかります。
     </p>
+    <div><h3>使うAI</h3>
+      <div class="chips" id="asModel" style="margin-top:6px">
+        <button data-model="claude-opus-5">Opus 5<br><small>いちばん賢い・高い</small></button>
+        <button data-model="claude-sonnet-5">Sonnet 5<br><small>Opusの半額以下</small></button>
+        <button data-model="claude-haiku-4-5">Haiku 4.5<br><small>いちばん安い</small></button>
+      </div>
+      <p class="xs" style="margin:6px 0 0">どれが正確かはまだ分かりません。食事の写真の画面にある「3つのAIで比べる」で、同じ写真の結果・秒数・費用を並べて見られます。</p>
+    </div>
     <p class="xs" style="margin:0">
       キーはこのiPhoneの中だけに保存します（「データを書き出す」のファイルにも入りません）。送るのは食事の写真とメモだけで、体重などの記録は送りません。
     </p>
@@ -457,7 +472,7 @@
       <button class="ghost" id="asDel">キーを消す</button>
     </div>
     <p class="msg" id="asMsg"></p>
-    <p class="xs" id="asUse" style="margin:0"></p>
+    <p class="xs" id="asUse" style="margin:0;white-space:pre-line"></p>
   </div>
 </div>
 
@@ -862,33 +877,50 @@ const FOOD_SCHEMA={type:"object",additionalProperties:false,required:["title","i
     properties:{name:{type:"string"},kcal:{type:"integer"},protein_g:{type:"number"}}}},
   confidence:{type:"string",enum:["high","medium","low"]},
   note:{type:"string"}}};
-// Claude Opus 5 の定価（$5 / $25 per 1M tokens）で1回ぶんの費用を数えて、今月の合計を設定画面に出す
-function trackUse(u){
-  if(!u) return;
+// 使うAI（設定で選ぶ）。料金＝Anthropic公式の定価（入力/出力 $ per 1M tokens）。
+// effort は Haiku 4.5 では使えない（送るとエラー）ので付けない。
+const MODELS={
+  "claude-opus-5":  {name:"Opus 5",   in:5,out:25,effort:true},
+  "claude-sonnet-5":{name:"Sonnet 5", in:2,out:10,effort:true},
+  "claude-haiku-4-5":{name:"Haiku 4.5",in:1,out:5, effort:false}};
+const AMODEL="cut12:model", DEF_MODEL="claude-sonnet-5", YEN=150;   // 円は1ドル150円の目安
+const getModel=()=>{ let m=""; try{ m=localStorage.getItem(AMODEL)||""; }catch(e){} return MODELS[m]?m:DEF_MODEL; };
+const yen=usd=>{ const y=usd*YEN; return y<1?"約"+y.toFixed(1)+"円":"約"+Math.round(y)+"円"; };
+// 1回ぶんの費用を数えて、今月の合計（とAIごとの内訳）を設定画面に出す
+function trackUse(u,model){
+  if(!u) return 0;
+  const P=MODELS[model]||MODELS[DEF_MODEL];
+  const usd=((u.input_tokens||0)+(u.cache_creation_input_tokens||0)*1.25+(u.cache_read_input_tokens||0)*0.1)*P.in*1e-6+(u.output_tokens||0)*P.out*1e-6;
   const m=today.slice(0,7); let o={};
   try{ o=JSON.parse(localStorage.getItem(AUSE))||{}; }catch(e){}
   if(o.m!==m) o={m,n:0,usd:0};
-  o.n++; o.usd+=((u.input_tokens||0)+(u.cache_creation_input_tokens||0)*1.25+(u.cache_read_input_tokens||0)*0.1)*5e-6+(u.output_tokens||0)*25e-6;
+  if(!o.by) o.by={};
+  o.n++; o.usd+=usd;
+  const b=o.by[model]||(o.by[model]={n:0,usd:0}); b.n++; b.usd+=usd;
   try{ localStorage.setItem(AUSE,JSON.stringify(o)); }catch(e){}
+  return usd;
 }
-async function estimateFood(b64,memo){
+async function estimateFood(b64,memo,model){
+  model=model||getModel();
   const Anthropic=await loadSDK();
   const client=new Anthropic({apiKey:getKey(),dangerouslyAllowBrowser:true,maxRetries:1});
+  const t0=performance.now();
   try{
+    const oc={format:{type:"json_schema",schema:FOOD_SCHEMA}};
+    if(MODELS[model].effort) oc.effort="medium";
     const res=await client.messages.create({
-      model:"claude-opus-5", max_tokens:16000,
-      output_config:{effort:"medium",format:{type:"json_schema",schema:FOOD_SCHEMA}},
+      model, max_tokens:16000, output_config:oc,
       system:FOOD_SYS,
       messages:[{role:"user",content:[
         {type:"image",source:{type:"base64",media_type:"image/jpeg",data:b64}},
         {type:"text",text:memo?"メモ："+memo:"この食事を見積もってください。"}]}]
     });
-    trackUse(res.usage);
+    const usd=trackUse(res.usage,model), sec=(performance.now()-t0)/1000;
     if(res.stop_reason==="refusal") throw new Error("AIがこの写真の推定を断りました。下の「手で入れる」で記録してください。");
     if(res.stop_reason==="max_tokens") throw new Error("AIの返事が途中で切れました。もう一度試してください。");
     const t=res.content.find(b=>b.type==="text");
     if(!t) throw new Error("AIの返事が空でした。もう一度試してください。");
-    return JSON.parse(t.text);
+    return {r:JSON.parse(t.text),model,sec,usd};
   }catch(e){ throw new Error(aiErr(e,Anthropic)); }
 }
 function aiErr(e,A){
@@ -905,25 +937,57 @@ function fdShowEdit(){
   $("fdKcal").value=Math.round(k*FD.mul); $("fdP").value=+(p*FD.mul).toFixed(1);
   [...$("fdMul").children].forEach(b=>b.classList.toggle("on",+b.dataset.mul===FD.mul));
 }
+const meta=o=>`${MODELS[o.model].name}・${o.sec.toFixed(1)}秒・${yen(o.usd)}（$${o.usd.toFixed(4)}）`;
+// 推定結果を画面に出す（ふつうの推定と「比べる」で選んだ結果の共通）
+function fdShowRes(o){
+  const r=o.r; FD.res=r; FD.mul=1;
+  if(!r.items.length){ fdMsg("食べ物が見つかりませんでした。"+(r.note?"\n"+r.note:"")+"\n"+meta(o),true); $("fdRes").innerHTML=""; $("fdEdit").hidden=true; return; }
+  $("fdRes").innerHTML=r.items.map(x=>`<div class="line"><span>${esc(x.name)}</span><span>${x.kcal}kcal・P${Math.round(x.protein_g)}</span></div>`).join("");
+  fdMsg((r.confidence==="low"?"⚠ 自信低め。量を確かめてください。":r.confidence==="medium"?"大体の見積もりです。":"見積もりです。")+(r.note?"\n"+r.note:"")+"\n"+meta(o),r.confidence==="low");
+  $("fdName").value=r.title; $("fdEdit").hidden=false; fdShowEdit();
+}
+function fdBusy(on){ FD.busy=on; ["fdRetry","fdSave","fdCmpBtn"].forEach(id=>$(id).disabled=on); }
 async function runEstimate(){
   if(FD.busy) return;
   if(!getKey()){ fdMsg("先に「写真カロリーの設定」でAPIキーを入れてください（下の「手で入れる」ならキーなしで記録できます）。",true); return; }
-  FD.busy=true; $("fdRetry").disabled=true; $("fdSave").disabled=true;
-  fdMsg(sdkP?"AIが見積もっています…（数秒〜十数秒）":"AIが見積もっています…（初回は部品の読み込みで少し長くかかります）");
-  try{
-    const r=await estimateFood(FD.img,$("fdMemo").value.trim());
-    FD.res=r; FD.mul=1;
-    if(!r.items.length){ fdMsg("食べ物が見つかりませんでした。"+(r.note?"\n"+r.note:""),true); $("fdRes").innerHTML=""; $("fdEdit").hidden=true; return; }
-    $("fdRes").innerHTML=r.items.map(x=>`<div class="line"><span>${esc(x.name)}</span><span>${x.kcal}kcal・P${Math.round(x.protein_g)}</span></div>`).join("");
-    fdMsg((r.confidence==="low"?"⚠ 自信低め。量を確かめてください。":r.confidence==="medium"?"大体の見積もりです。":"見積もりです。")+(r.note?"\n"+r.note:""),r.confidence==="low");
-    $("fdName").value=r.title; $("fdEdit").hidden=false; fdShowEdit();
-  }catch(e){ fdMsg(e.message,true); $("fdEdit").hidden=!FD.res; }
-  finally{ FD.busy=false; $("fdRetry").disabled=false; $("fdSave").disabled=false; }
+  fdBusy(true); $("fdCmp").innerHTML="";
+  fdMsg((sdkP?"AIが見積もっています…（数秒〜十数秒）":"AIが見積もっています…（初回は部品の読み込みで少し長くかかります）")+"\n使うAI："+MODELS[getModel()].name);
+  try{ fdShowRes(await estimateFood(FD.img,$("fdMemo").value.trim())); }
+  catch(e){ fdMsg(e.message,true); $("fdEdit").hidden=!FD.res; }
+  finally{ fdBusy(false); }
 }
+// 同じ写真を3つのAIに同時に送り、kcal・P・秒数・費用を並べる。「使う」でその結果を記録欄に入れる
+async function runCompare(){
+  if(FD.busy||!FD.img) return;
+  if(!getKey()){ fdMsg("先に「写真カロリーの設定」でAPIキーを入れてください。",true); return; }
+  fdBusy(true);
+  const ids=Object.keys(MODELS), memo=$("fdMemo").value.trim();
+  $("fdCmp").innerHTML=`<h3 style="margin-top:12px">3つのAIで比べる</h3>`+ids.map(id=>
+    `<div class="cmprow"><div class="nm">${MODELS[id].name}<small>見積もり中…</small></div></div>`).join("");
+  const out=await Promise.allSettled(ids.map(id=>estimateFood(FD.img,memo,id)));
+  FD.cmp={};
+  $("fdCmp").innerHTML=`<h3 style="margin-top:12px">3つのAIで比べる</h3>`+out.map((s,i)=>{
+    const id=ids[i], nm=MODELS[id].name;
+    if(s.status==="rejected") return `<div class="cmprow"><div class="nm">${nm}<small style="color:var(--warn)">${esc(s.reason.message)}</small></div></div>`;
+    const o=s.value, r=o.r; FD.cmp[id]=o;
+    const k=r.items.reduce((a,x)=>a+x.kcal,0), p=r.items.reduce((a,x)=>a+x.protein_g,0);
+    const conf={high:"自信あり",medium:"大体",low:"自信低め"}[r.confidence]||"";
+    return `<div class="cmprow"><div class="nm">${nm}：<b>${k}kcal・P${Math.round(p)}</b>`+
+      `<small>${esc(r.title)}（${conf}）\n${o.sec.toFixed(1)}秒・${yen(o.usd)}（$${o.usd.toFixed(4)}）</small></div>`+
+      (r.items.length?`<button class="ghost" data-use="${id}">使う</button>`:"")+`</div>`;
+  }).join("")+`<p class="xs" style="margin:6px 0 0">円は1ドル150円の目安。正確な請求はClaude Consoleで確認。</p>`;
+  fdBusy(false);
+}
+$("fdCmpBtn").addEventListener("click",runCompare);
+$("fdCmp").addEventListener("click",e=>{
+  const b=e.target.closest("[data-use]"); if(!b||!FD.cmp||!FD.cmp[b.dataset.use]) return;
+  fdShowRes(FD.cmp[b.dataset.use]);
+  [...$("fdCmp").querySelectorAll("[data-use]")].forEach(x=>x.classList.toggle("on",x===b));
+});
 $("foodFile").addEventListener("change",async e=>{
   const f=e.target.files[0]; e.target.value=""; if(!f||!FD.slot) return;
   foodOpen(FD.slot); FD.res=null; FD.mul=1;
-  $("fdAi").hidden=false; $("fdEdit").hidden=true; $("fdRes").innerHTML=""; $("fdMemo").value="";
+  $("fdAi").hidden=false; $("fdEdit").hidden=true; $("fdRes").innerHTML=""; $("fdMemo").value=""; $("fdCmp").innerHTML=""; FD.cmp=null;
   fdMsg("写真を読み込んでいます…");
   try{
     const c=await toCanvas(f,1024);                 // 長辺1024pxに縮める＝送る量と料金を抑える
@@ -945,9 +1009,16 @@ $("fdSave").addEventListener("click",()=>{
 function asOpen(){
   const k=getKey(); $("asKey").value=""; $("asKey").placeholder=k?"保存済み（…"+k.slice(-4)+"）":"sk-ant-…";
   $("asMsg").textContent=""; let o=null; try{ o=JSON.parse(localStorage.getItem(AUSE)); }catch(e){}
-  $("asUse").textContent=o&&o.m===today.slice(0,7)?`今月の推定：${o.n}回・約$${o.usd.toFixed(2)}（Opus 5の定価で計算した目安。正確な請求はコンソールで確認）`:"今月の推定：0回";
-  openModal("aiset");
+  const by=o&&o.by?Object.keys(o.by).filter(id=>MODELS[id]).map(id=>`${MODELS[id].name} ${o.by[id].n}回`).join("・"):"";
+  $("asUse").textContent=o&&o.m===today.slice(0,7)?`今月の推定：${o.n}回・約$${o.usd.toFixed(2)}（${yen(o.usd)}）${by?"\n内訳："+by:""}\n定価で計算した目安。正確な請求はClaude Consoleで確認。`:"今月の推定：0回";
+  asModelRender(); openModal("aiset");
 }
+function asModelRender(){ const m=getModel(); [...$("asModel").children].forEach(b=>b.classList.toggle("on",b.dataset.model===m)); }
+$("asModel").addEventListener("click",e=>{
+  const b=e.target.closest("[data-model]"); if(!b) return;
+  try{ localStorage.setItem(AMODEL,b.dataset.model); }catch(err){ $("asMsg").textContent="保存できませんでした："+err.message; $("asMsg").className="msg warn"; return; }
+  asModelRender(); $("asMsg").textContent=`使うAIを ${MODELS[b.dataset.model].name} にしました。`; $("asMsg").className="msg";
+});
 $("aiConfig").addEventListener("click",asOpen);
 $("asClose").addEventListener("click",()=>closeModal("aiset"));
 $("asSave").addEventListener("click",()=>{
