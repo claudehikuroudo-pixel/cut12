@@ -169,6 +169,24 @@
   .burn.ok .h{opacity:1}
   .burn.ok .h b{color:var(--ok)}
   .burn.setup{background:rgba(255,255,255,.5);color:var(--ink)}
+  /* 今日の痩せるカロリー＝（基礎代謝＋ふだんの動き＋運動）−摂取 → 脂肪◯kg分 */
+  .balv{display:flex;align-items:baseline;gap:4px 12px;flex-wrap:wrap;margin-top:6px}
+  .balv .n{font-size:38px;font-weight:300;line-height:1.05;font-variant-numeric:tabular-nums}
+  .balv .n small{font-size:14px;margin-left:2px;color:var(--muted)}
+  .balv .kg{font-size:14px}
+  .balv .kg b{font-size:20px;font-weight:600;font-variant-numeric:tabular-nums}
+  .balv.plus .n,.balv.plus .kg b{color:var(--ok)}
+  .balv.minus .n,.balv.minus .kg b{color:var(--warn)}
+  .bl{margin-top:10px;font-size:13px}
+  .bl .line{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:4px 0;border-bottom:1px dashed rgba(58,46,110,.18)}
+  .bl .line span:last-child{flex:none;font-variant-numeric:tabular-nums}
+  .bl .line.sub{padding-left:12px;color:var(--muted);font-size:12px}
+  .bl .line.tot{font-weight:600;border-bottom:0}
+  .bl .x{border:0;background:none;color:var(--warn);font-size:12px;cursor:pointer;font-family:inherit;padding:0 0 0 6px}
+  .balcmp{margin-top:8px;font-size:13px;padding:8px 12px;border-radius:12px;background:rgba(255,255,255,.5)}
+  #exKind{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+  #exKind button{border-radius:14px;padding:8px 6px;white-space:normal;text-align:left}
+  #exKind small{font-size:10px;opacity:.8}
   #bdPal{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
   #bdPal button{border-radius:14px;padding:8px 4px;white-space:normal}
   #bdPal small{font-size:10px;opacity:.8}
@@ -318,6 +336,12 @@
   </section>
 
   <section class="glass panel">
+    <div class="row"><h2>今日の痩せるカロリー</h2><span class="sm" id="balNow"></span></div>
+    <div id="bal"></div>
+    <button class="ghost" id="exAdd" style="margin-top:10px;width:100%">＋ 運動を記録</button>
+  </section>
+
+  <section class="glass panel">
     <div class="hardh"><span class="tag">TRAINING</span><h2>今日の追い込み</h2></div>
     <div id="burn"></div>
     <div class="grid3" id="tasks"></div>
@@ -420,6 +444,29 @@
   </div>
 </div>
 
+<!-- 運動を記録（痩せるカロリーに上乗せ） -->
+<div class="modal" id="exm" hidden>
+  <div class="mhead">
+    <button class="ghost" id="exClose">閉じる</button>
+    <span class="sm">運動を記録</span>
+    <span style="width:52px"></span>
+  </div>
+  <div class="fd">
+    <div><h3>種類を選んで、やった分数を入れる</h3>
+      <div class="chips" id="exKind" style="margin-top:6px"></div></div>
+    <div class="field"><input type="number" id="exMin" inputmode="numeric" class="num-in" placeholder="分"><span class="sm">分</span>
+      <span class="sm" id="exPrev" style="flex:1;text-align:right"></span></div>
+    <button class="closeday" id="exSave">記録する</button>
+    <div><h3>kcalで入れる（時計やマシンの数字など）</h3>
+      <div class="field" style="margin-top:6px"><input type="text" id="exName" placeholder="運動の名前（なくてもOK）"></div>
+      <div class="field" style="margin-top:8px"><input type="number" id="exKcal" inputmode="numeric" class="num-in" placeholder="kcal"><span class="sm">kcal</span>
+        <button class="ghost" id="exKSave">記録する</button></div>
+      <p class="xs" style="margin:6px 0 0">安静にしていても使う分は基礎代謝で数えているので、安静時の分を含まない数字を入れてください。</p></div>
+    <div id="exList"></div>
+    <p class="xs" style="margin:0">計算：（メッツ−1）×体重×時間。メッツ＝改訂版『身体活動のメッツ（METs）表』（国立健康・栄養研究所 2012）。1を引くのは、その時間の安静の分は基礎代謝ですでに数えているため（二重に数えない）。どれも目安です。</p>
+  </div>
+</div>
+
 <!-- からだの設定（消費カロリー） -->
 <div class="modal" id="body" hidden>
   <div class="mhead">
@@ -428,7 +475,7 @@
     <span style="width:52px"></span>
   </div>
   <div class="fd">
-    <p class="sm" style="margin:0">身長・年齢・性別・ふだんの動き方から、1日の消費カロリーと「今日食べていい目安」を出します。体重は記録（7日平均）を使います。</p>
+    <p class="sm" style="margin:0">身長・年齢・性別・ふだんの動き方から、基礎代謝とふだんの動きの消費カロリーを出します。運動は「今日の痩せるカロリー」の「＋ 運動を記録」で、やった日だけ足します。体重は記録（7日平均）を使います。</p>
     <div class="field"><input type="number" id="bdH" inputmode="decimal" class="num-in" placeholder="身長"><span class="sm">cm</span>
       <input type="number" id="bdAge" inputmode="numeric" class="num-in" placeholder="年齢"><span class="sm">歳</span></div>
     <div class="chips" id="bdSex"><button data-sex="m">男性</button><button data-sex="f">女性</button></div>
@@ -436,8 +483,9 @@
       <div class="chips" id="bdPal" style="margin-top:6px">
         <button data-pal="1.5">低い 1.50<br><small>座っている時間が長い</small></button>
         <button data-pal="1.75">ふつう 1.75<br><small>座り仕事＋移動や家事</small></button>
-        <button data-pal="2">高い 2.00<br><small>立ち仕事・運動習慣あり</small></button>
-      </div></div>
+        <button data-pal="2">高い 2.00<br><small>立ち仕事・移動が多い</small></button>
+      </div>
+      <p class="xs" style="margin:6px 0 0">運動は別に記録して足すので、ここは<b>運動を除いた</b>ふだんの動きで選んでください（運動の分まで入れると二重に数えます）。</p></div>
     <div class="glass panel" id="bdOut"></div>
     <button class="closeday" id="bdSave">保存</button>
     <p class="xs" style="margin:0">計算：基礎代謝＝国立健康・栄養研究所の式、活動レベル＝日本人の食事摂取基準（2020年版）、脂肪1kg＝7,000kcal（厚労省 身体活動・運動ガイド2023）。どれも推定なので、2週間の体重の動きで見直してください。</p>
@@ -605,8 +653,9 @@ function render(){
   renderPhotos();
 
   // 食事
-  const sum=daySum(d), en=energy(), goalK=en?en.target:PLAN_K;
-  $("macro").textContent=`${sum.k.toLocaleString()} / ${goalK.toLocaleString()}kcal・P${Math.round(sum.p)} / 120g`;
+  const sum=daySum(d);
+  $("macro").textContent=`${sum.k.toLocaleString()}kcal・P${Math.round(sum.p)} / 120g`;
+  renderBal(d);
   renderBurn(d);
   $("macro").style.color=sum.p>=120?"var(--avg)":"var(--muted)";
   $("meals").innerHTML=MEALS.map(m=>{
@@ -650,8 +699,10 @@ function dayText(i){
   if(i>di) return head+"　まだ先の日です。";
   const meals=x?MEALS.filter(m=>slotOf(x,m.id)).length:0;
   if(!lvOf(x)&&!meals) return head+"　記録なし。";
+  const ex=exSum(x);
   return head+"　"+(x.w!=null?x.w.toFixed(1)+"kg":"体重なし")+"・"+
-    TASKS.map(t=>SHORT[t.id]+(x[t.id]?"✓":"—")).join("・")+"・食事"+meals+"/4"+(meals?`（${daySum(x).k.toLocaleString()}kcal）`:"");
+    TASKS.map(t=>SHORT[t.id]+(x[t.id]?"✓":"—")).join("・")+"・食事"+meals+"/4"+(meals?`（${daySum(x).k.toLocaleString()}kcal）`:"")+
+    (ex?`・運動${ex.toLocaleString()}kcal`:"");
 }
 function renderCal(di){
   const done=Math.min(di+1,TOTAL);
@@ -707,13 +758,18 @@ function openReceipt(){
     `<div class="r-c"><div class="r-t">12週カット</div><div>本日の明細</div>
        <div class="r-mute">${today.replace(/-/g,"/")}(${"日月火水木金土"[now.getDay()]}) ${hm}　No.${String(di+1).padStart(3,"0")}/${TOTAL}</div></div>`+
     HR+ml+HR+
-    L("タンパク質 計",`${P} / 120g`)+L("摂取 計",K.toLocaleString()+"kcal","r-big")+
-    (()=>{ const e=energy(); if(!e) return ""; const o=K-e.target;
-      if(o<=0) return L("今日の目安",e.target.toLocaleString()+"kcal")+L("残り",(-o).toLocaleString()+"kcal");
-      const p=burnPlan(o,e.w);
-      return L("今日の目安",e.target.toLocaleString()+"kcal")+L("食べすぎ",`+${o.toLocaleString()}kcal`,"r-big")+
-        L("　追い込み",p.reps.map(r=>r.n+r.c).join("・"))+(p.min?L("　＋"+CARDIO.n,p.min+"分"):"")+
-        (p.left?L("　明日へ持ち越し",p.left.toLocaleString()+"kcal"):""); })()+
+    L("タンパク質 計",`${P} / 120g`)+
+    (()=>{ const b=balance(d); if(!b) return L("摂取 計",K.toLocaleString()+"kcal","r-big");
+      const exl=(d.ex||[]).map((x,i)=>L(esc((i?"　":"運動 ")+x.n+(x.min?` ${x.min}分`:"")),"+"+x.kcal)).join("");
+      let s=HR+L("基礎代謝",b.bmr.toLocaleString())+L("ふだんの動き","+"+b.move.toLocaleString())+exl+
+        L("消費 計",b.out.toLocaleString()+"kcal")+L("摂取 計","−"+K.toLocaleString()+"kcal")+
+        L(b.net>=0?"痩せるカロリー":"太るカロリー",(b.net>=0?"":"+")+Math.abs(b.net).toLocaleString()+"kcal","r-big")+
+        L("　＝ 脂肪",`約${Math.abs(b.kg).toFixed(2)}kg分`)+
+        L("　予定 "+b.cut.toLocaleString()+"kcal に対して",(b.gap>=0?"+":"−")+Math.abs(b.gap).toLocaleString());
+      if(b.gap<0){ const p=burnPlan(-b.gap,b.w);
+        s+=L("　追い込み",p.reps.map(r=>r.n+r.c).join("・"))+(p.min?L("　＋"+CARDIO.n,p.min+"分"):"")+
+          (p.left?L("　明日へ持ち越し",p.left.toLocaleString()+"kcal"):""); }
+      return s; })()+
     HR+tk+HR+wv+
     `<div class="r-c r-big" style="margin-top:4px">＊＊ ${verdict} ＊＊</div>`+
     HR+L("今日のマス",`${lvOf(d)} / 4`)+
@@ -726,7 +782,6 @@ $("closeDay").addEventListener("click",openReceipt);
 
 /* ===== 食事：枠ごとに「予定どおり／写真（AI推定）／いつもの・手入力（複数可）／飯抜き」 =====
    保存の形：d.meals＝予定どおりの枠id（旧版と同じ）／d.food[id]＝{skip:true} か {items:[{n,kcal,p,src}]} */
-const PLAN_K=MEALS.reduce((a,m)=>a+m.kcal,0);
 function slotOf(d,id){
   if(d.food&&d.food[id]) return d.food[id];
   return (d.meals||[]).includes(id)?{plan:true}:null;
@@ -754,7 +809,9 @@ function addItem(id,it){
    基礎代謝＝国立健康・栄養研究所の式（Ganpule 2007／日本人の食事摂取基準2020 報告書に掲載）
    1日の消費＝基礎代謝×身体活動レベル（1.50/1.75/2.00＝同基準 30〜64歳）
    1日に減らす量＝(開始体重−目標)×7,000kcal÷84日（脂肪1kg＝7,000kcal：厚労省 身体活動・運動ガイド2023）
-   運動の消費＝メッツ×体重×時間（医薬基盤・健康・栄養研究所 メッツ表 成人版の式）
+   運動の消費＝（メッツ−1）×体重×時間。メッツ×体重×時間（医薬基盤・健康・栄養研究所 メッツ表 成人版の式）から、
+     安静の1メッツ分を引く（その時間の安静分は基礎代謝で数えているので二重に数えない。
+     健康長寿ネット「運動強度とエネルギー消費量」＝「安静時のエネルギー量を引いたもの」。2026-09-16 痩せるカロリーの形に変更）
    メッツ＝腕立て伏せ・腹筋 8.0（健康体操・きつい労力 02020）／スクワット 5.0（レジスタンス：スクワット 02052・表中でも推定値）
    1回の秒数は公的な資料が無いので仮置き（腕立て・腹筋2秒、スクワット3秒）＝画面にも「目安」と出す */
 const FAT_KCAL=7000;
@@ -762,41 +819,125 @@ const FAT_KCAL=7000;
 // 有酸素のメッツ＝その場ジョギング 8.0（12025）／縄跳び・ゆっくり 8.8（15552）（改訂版メッツ表 2012）
 const REPS=[{n:"腕立て",mets:8,sec:2,max:30},{n:"腹筋",mets:8,sec:2,max:45},{n:"スクワット",mets:5,sec:3,max:60}];
 const CARDIO={n:"その場ジョギング",mets:8,alt:"縄跳び",altMets:8.8,maxMin:20}, BLOCK_MIN=10;
+// 運動の種類（改訂版『身体活動のメッツ（METs）表』国立健康・栄養研究所 2012 のコードと値）
+const EXK=[
+  {n:"キック・格闘技の練習",mets:10.3,c:"15430 武術 ほどほどのペース"},
+  {n:"サンドバッグ",mets:5.5,c:"15110 ボクシング サンドバッグ"},
+  {n:"スパーリング",mets:7.8,c:"15120 ボクシング スパーリング"},
+  {n:"ジョギング",mets:7.0,c:"12020 ジョギング 全般"},
+  {n:"ランニング 8km/時",mets:8.3,c:"12030"},
+  {n:"速歩き 6.4km/時",mets:5.0,c:"17220 歩行 とても速い"},
+  {n:"縄跳び（ゆっくり）",mets:8.8,c:"15552"},
+  {n:"筋トレ（きつめ）",mets:6.0,c:"02050 レジスタンストレーニング きつい労力"},
+  {n:"エアロバイク",mets:7.0,c:"02010 自転車エルゴメータ 全般"},
+  {n:"サーキット（きつめ）",mets:8.0,c:"02040"}
+];
+const exK=(mets,min,w)=>Math.max(0,Math.round((mets-1)*w*min/60));
+const exSum=d=>d&&d.ex?d.ex.reduce((a,x)=>a+(+x.kcal||0),0):0;
 function curW(){ const a=avgOn(today), x=S.days[today]; return a!=null?a:(x&&x.w!=null?x.w:lastW()); }
 function energy(){
   const b=S.body; if(!b||!b.h||!b.age||!b.sex||!b.pal) return null;
   const w=curW();
   const bmr=(0.0481*w+0.0234*b.h-0.0138*b.age-(b.sex==="f"?0.9708:0.4235))*1000/4.186;
   const tdee=bmr*b.pal, cut=Math.max(0,(S.startW-S.goalW)*FAT_KCAL/TOTAL);
-  return {w,bmr:Math.round(bmr),tdee:Math.round(tdee),cut:Math.round(cut),target:Math.round(tdee-cut)};
+  return {w,bmr:Math.round(bmr),move:Math.round(tdee)-Math.round(bmr),tdee:Math.round(tdee),cut:Math.round(cut),target:Math.round(tdee-cut)};
 }
-// 食べすぎ分(kcal)を「筋トレ＋有酸素」に分けて30分以内に収める。収まらない分は left に残して正直に出す
+// 今日の収支：消費（基礎代謝＋ふだんの動き＋運動）−摂取＝痩せるカロリー → ÷7,000で脂肪◯kg分。gap＝予定の痩せるカロリーとの差
+function balance(d){
+  const e=energy(); if(!e) return null;
+  const ex=exSum(d), inK=daySum(d).k, out=e.tdee+ex, net=out-inK;
+  return Object.assign({},e,{ex,inK,out,net,kg:net/FAT_KCAL,gap:net-e.cut});
+}
+// 足りない分(kcal)を「筋トレ＋有酸素」に分けて30分以内に収める。収まらない分は left に残して正直に出す
 function burnPlan(kcal,w){
-  const kOf=(r,c)=>r.mets*w*r.sec*c/3600;
+  const kOf=(r,c)=>(r.mets-1)*w*r.sec*c/3600;
   const full=REPS.reduce((a,r)=>a+kOf(r,r.max),0);
   const f=Math.min(1,kcal/full);
   const reps=REPS.map(r=>({n:r.n,c:Math.max(5,Math.ceil(r.max*f/5)*5)}));
   const sk=REPS.reduce((a,r,i)=>a+kOf(r,reps[i].c),0);
-  const perMin=CARDIO.mets*w/60, rest=Math.max(0,kcal-sk);
+  const perMin=(CARDIO.mets-1)*w/60, rest=Math.max(0,kcal-sk);
   const min=Math.min(CARDIO.maxMin,Math.ceil(rest/perMin));
-  const altMin=min?Math.ceil(Math.min(rest,CARDIO.maxMin*perMin)/(CARDIO.altMets*w/60)):0;
+  const altMin=min?Math.ceil(Math.min(rest,CARDIO.maxMin*perMin)/((CARDIO.altMets-1)*w/60)):0;
   const done=Math.round(sk+min*perMin);
   return {reps,min,altMin,total:Math.round(BLOCK_MIN*f)+min,done,left:Math.max(0,Math.round(kcal-done))};
 }
-function renderBurn(d){
-  const e=energy(), el=$("burn");
-  if(!e){ el.innerHTML=`<div class="burn setup"><div class="h">身長・年齢を入れると、食べすぎた分を「腕立て◯回」で出します。</div>
+function renderBal(d){
+  const b=balance(d), el=$("bal");
+  $("exAdd").hidden=!b;
+  if(!b){ $("balNow").textContent="";
+    el.innerHTML=`<div class="burn setup" style="margin-top:8px"><div class="h">身長・年齢を入れると、今日の消費から食べた分を引いた「痩せるカロリー」と、それが脂肪何kg分かを出します。</div>
       <button class="ghost" data-open-body style="margin-top:8px">からだの設定</button></div>`; return; }
-  const k=daySum(d).k, over=k-e.target;
-  if(over<=0){ el.innerHTML=`<div class="burn ok"><div class="h">今日の目安 ${e.target.toLocaleString()}kcal まで、あと<b>${(-over).toLocaleString()}</b>kcal</div></div>`; return; }
-  const p=burnPlan(over,e.w);
-  el.innerHTML=`<div class="burn"><div class="h">食べすぎ <b>+${over.toLocaleString()}</b>kcal　→ ${p.left?"30分メニュー":`約${Math.max(p.total,1)}分で帳消し`}</div>
+  $("balNow").textContent="いまの時点";
+  const plus=b.net>=0, meals=MEALS.filter(m=>slotOf(d,m.id)).length;
+  const exl=(d.ex||[]).map((x,i)=>`<div class="line sub"><span>${esc(x.n)}${x.min?` ${x.min}分`:""}<button class="x" data-exdel="${i}">消す</button></span><span>+${(+x.kcal).toLocaleString()}</span></div>`).join("");
+  el.innerHTML=`<div class="balv ${plus?"plus":"minus"}">
+      <div class="n">${plus?"":"+"}${Math.abs(b.net).toLocaleString()}<small>kcal ${plus?"痩せる":"太る"}</small></div>
+      <div class="kg">＝ 脂肪 約<b>${Math.abs(b.kg).toFixed(2)}</b>kg分</div></div>
+    <div class="bl">
+      <div class="line"><span>基礎代謝</span><span>${b.bmr.toLocaleString()}</span></div>
+      <div class="line"><span>ふだんの動き</span><span>+${b.move.toLocaleString()}</span></div>
+      <div class="line"><span>運動</span><span>+${b.ex.toLocaleString()}</span></div>${exl}
+      <div class="line"><span>食べた分（${meals}/4食）</span><span>−${b.inK.toLocaleString()}</span></div>
+      <div class="line tot"><span>${plus?"痩せるカロリー":"太るカロリー"}</span><span>${plus?"":"+"}${Math.abs(b.net).toLocaleString()}kcal</span></div>
+    </div>
+    <div class="balcmp">予定（${S.startW}→${S.goalW}kgを${TOTAL}日で）は1日 <b>${b.cut.toLocaleString()}kcal</b>＝約${(b.cut/FAT_KCAL).toFixed(2)}kg分。
+      ${b.gap>=0?`いまは <b style="color:var(--ok)">+${b.gap.toLocaleString()}kcal</b> 上回っています。`:`いまは <b style="color:var(--warn)">${Math.abs(b.gap).toLocaleString()}kcal</b> 足りません（埋め方は下の追い込みに）。`}
+      ${meals<4?`<br><span class="xs">まだ食べていない食事があると、その分だけ減ります。</span>`:""}</div>`;
+}
+$("bal").addEventListener("click",e=>{
+  const x=e.target.closest("[data-exdel]"); if(!x) return;
+  const ex=(day().ex||[]).slice(); ex.splice(+x.dataset.exdel,1); patch({ex});
+});
+function renderBurn(d){
+  const b=balance(d), el=$("burn");
+  if(!b){ el.innerHTML=""; return; }
+  if(b.gap>=0){ el.innerHTML=`<div class="burn ok"><div class="h">予定の痩せるカロリーに届いています（<b>+${b.gap.toLocaleString()}</b>kcal）。追い込みは無しでOK。</div></div>`; return; }
+  const short=-b.gap, p=burnPlan(short,b.w);
+  el.innerHTML=`<div class="burn"><div class="h">予定まで <b>${short.toLocaleString()}</b>kcal 足りない　→ ${p.left?"30分メニュー":`約${Math.max(p.total,1)}分で届く`}</div>
     <div class="sub">① 筋トレ（3セットに分けて）</div>
     <div class="reps">${p.reps.map(r=>`<div><b>${r.c}</b><span>${r.n} 回</span></div>`).join("")}</div>
     ${p.min?`<div class="sub">② 有酸素</div><div class="cardio"><b>${p.min}</b>分 ${CARDIO.n}<span>（${CARDIO.alt}なら ${p.altMin}分）</span></div>`:""}
-    <div class="ft">${p.left?`30分で消せるのは約${p.done.toLocaleString()}kcal。残り <b>${p.left.toLocaleString()}kcal</b> は明日の食事で調整を。`:`約${p.done.toLocaleString()}kcal分。`}
-    今日の目安 ${e.target.toLocaleString()}kcal／メッツ表の値と1回2〜3秒で計算した目安</div></div>`;
+    <div class="ft">${p.left?`30分で足せるのは約${p.done.toLocaleString()}kcal。残り <b>${p.left.toLocaleString()}kcal</b> は明日の食事で調整を。`:`約${p.done.toLocaleString()}kcal分。`}
+    メッツ表の値と1回2〜3秒で計算した目安</div>
+    <button class="ghost" id="burnDone" style="margin-top:10px;width:100%;color:#fff;border-color:rgba(255,255,255,.4)">やった（約${p.done.toLocaleString()}kcalを運動に記録）</button></div>`;
+  $("burnDone").onclick=()=>{
+    const ex=(day().ex||[]).slice();
+    ex.push({n:"追い込み（"+p.reps.map(r=>r.n+r.c).join("・")+(p.min?"＋"+CARDIO.n+p.min+"分":"")+"）",kcal:p.done});
+    patch({ex});
+  };
 }
+// 運動を記録
+let EXSEL=0;
+function exOpen(){ EXSEL=0; $("exMin").value=""; $("exName").value=""; $("exKcal").value=""; exSync(); openModal("exm"); }
+function exSync(){
+  $("exKind").innerHTML=EXK.map((k,i)=>`<button data-exk="${i}"${i===EXSEL?' class="on"':""}>${k.n}<br><small>${k.mets}メッツ</small></button>`).join("");
+  const m=+$("exMin").value, w=curW();
+  $("exPrev").textContent=m>0&&w?`約 ${exK(EXK[EXSEL].mets,m,w).toLocaleString()}kcal`:"";
+  const d=S.days[today], ex=d&&d.ex||[];
+  $("exList").innerHTML=ex.length?`<h3>今日の運動</h3>`+ex.map((x,i)=>`<div class="line"><span>${esc(x.n)}${x.min?` ${x.min}分`:""}<button class="x" data-exdel2="${i}">消す</button></span><span>+${(+x.kcal).toLocaleString()}kcal</span></div>`).join(""):"";
+}
+$("exAdd").addEventListener("click",exOpen);
+$("exClose").addEventListener("click",()=>closeModal("exm"));
+$("exKind").addEventListener("click",e=>{ const b=e.target.closest("[data-exk]"); if(b){ EXSEL=+b.dataset.exk; exSync(); } });
+$("exMin").addEventListener("input",exSync);
+$("exList").addEventListener("click",e=>{
+  const x=e.target.closest("[data-exdel2]"); if(!x) return;
+  const ex=(day().ex||[]).slice(); ex.splice(+x.dataset.exdel2,1); patch({ex}); exSync();
+});
+$("exSave").addEventListener("click",()=>{
+  const m=Math.round(+$("exMin").value), w=curW();
+  if(!(m>0&&m<=600)){ alert("やった分数を入れてください（1〜600分）。"); return; }
+  if(!w){ alert("体重の記録が無いので計算できません。先に今朝の体重を入れてください。"); return; }
+  const k=EXK[EXSEL], ex=(day().ex||[]).slice();
+  ex.push({n:k.n,min:m,mets:k.mets,kcal:exK(k.mets,m,w)}); patch({ex});
+  $("exMin").value=""; exSync();
+});
+$("exKSave").addEventListener("click",()=>{
+  const kc=Math.round(+$("exKcal").value);
+  if(!(kc>0&&kc<=5000)){ alert("kcalを入れてください（1〜5,000）。"); return; }
+  const ex=(day().ex||[]).slice(); ex.push({n:$("exName").value.trim()||"運動",kcal:kc}); patch({ex});
+  $("exName").value=""; $("exKcal").value=""; exSync();
+});
 document.addEventListener("click",e=>{ if(e.target.closest("[data-open-body]")) bdOpen(); });
 
 // からだの設定
@@ -811,9 +952,10 @@ function bdSync(){
   const keep=S.body; S.body={h:+BD.h,age:+BD.age,sex:BD.sex,pal:+BD.pal}; const e=energy(); S.body=keep;
   $("bdOut").innerHTML=e?`<div class="line"><span>体重（7日平均・なければ最新）</span><span>${e.w.toFixed(1)}kg</span></div>
     <div class="line"><span>基礎代謝</span><span>${e.bmr.toLocaleString()}kcal</span></div>
-    <div class="line"><span>1日の消費</span><span>${e.tdee.toLocaleString()}kcal</span></div>
-    <div class="line"><span>減らす量（${S.startW}→${S.goalW}kg を${TOTAL}日で）</span><span>−${e.cut.toLocaleString()}kcal</span></div>
-    <div class="line" style="font-weight:600"><span>今日食べていい目安</span><span style="color:var(--ink)">${e.target.toLocaleString()}kcal</span></div>`
+    <div class="line"><span>ふだんの動き</span><span>+${e.move.toLocaleString()}kcal</span></div>
+    <div class="line" style="font-weight:600"><span>1日の消費（運動なし）</span><span style="color:var(--ink)">${e.tdee.toLocaleString()}kcal</span></div>
+    <div class="line"><span>予定の痩せるカロリー（${S.startW}→${S.goalW}kg を${TOTAL}日で）</span><span>1日 ${e.cut.toLocaleString()}kcal＝約${(e.cut/FAT_KCAL).toFixed(2)}kg分</span></div>
+    <p class="xs" style="margin:6px 0 0">運動しない日なら、食べた分が ${e.target.toLocaleString()}kcal までで予定どおりの痩せるカロリーになります。</p>`
     :`<p class="sm" style="margin:0">身長・年齢・性別を入れると計算します。</p>`;
 }
 ["bdH","bdAge"].forEach(id=>$(id).addEventListener("input",()=>{ BD.h=$("bdH").value; BD.age=$("bdAge").value; bdSync(); }));
